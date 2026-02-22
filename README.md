@@ -8,6 +8,7 @@ Backend automation tool that transforms unstructured PDF documents into standard
 
 **Tech Stack
 **
+
 - Node.js (server-side runtime)
 - JavaScript (ES6+)
 - fs (File System API) 
@@ -18,6 +19,7 @@ Backend automation tool that transforms unstructured PDF documents into standard
 
 **  Architecture Overview
 **
+
 PDF → OCR → Text Parsing → Structured JSON → DOCX Builder → Final Contract
 
 **What This Project Does
