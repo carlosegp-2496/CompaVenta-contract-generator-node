@@ -1,0 +1,19 @@
+{
+  "name": "duca-ocr-engine",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Carlos Gonzalez Portillo",
+  "license": "ISC",
+  "description": "Dynamic software to boost lawfirm productivity",
+  "dependencies": {
+    "docx": "^9.5.3",
+    "fs-extra": "^11.3.3",
+    "pdf-poppler": "^0.2.3",
+    "tesseract.js": "^7.0.0"
+  }
+}
