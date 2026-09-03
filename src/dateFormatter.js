@@ -1,5 +1,5 @@
 /**
- * Conviere numero a letras (hasta 9999 es enough para feachas y horas)
+ * Convierte número a letras (mejorado atendiendo las observaciones del Lic.Martinez)
  */
 
 export function numberToSpanishWords(num) {
@@ -62,22 +62,22 @@ export function numberToSpanishWords(num) {
 
   if (num >= 1000) {
     if (Math.floor(num / 1000) === 1) {
-      words += "mil";
+      words += "mil ";
     } else {
-      words += numberToSpanishWords(Math.floor(num / 1000)) + "mil";
+      words += numberToSpanishWords(Math.floor(num / 1000)) + " mil ";
     }
     num %= 1000;
   }
 
   if (num >= 100) {
-    words += centenas[Math.floor(num / 100)] + "";
+    words += centenas[Math.floor(num / 100)] + " ";
     num %= 100;
   }
 
   if (num >= 20) {
     words += decenas[Math.floor(num / 10)];
     if (num % 10 !== 0) {
-      words += "y" + unidades[num % 10];
+      words += " y " + unidades[num % 10];
     }
   } else if (num >= 10) {
     words += especiales[num - 10];
@@ -89,10 +89,10 @@ export function numberToSpanishWords(num) {
 }
 
 /**
- * Devuelve fecha actual en letras
+ * Fecha completa en formato legal listo para insertar
  */
 
-export function getCurrentDataInWords(ciudad = "Nejapa") {
+export function getFormattedDate(ciudad = "Nejapa") {
   const now = new Date();
 
   const meses = [
@@ -110,23 +110,22 @@ export function getCurrentDataInWords(ciudad = "Nejapa") {
     "diciembre",
   ];
 
-  return {
-    ciudad,
-    dia: numberToSpanishWords(now.getDate()),
-    mes: meses[now.getMonth()],
-    año: numberToSpanishWords(now.getFullYear()),
-  };
+  const dia = numberToSpanishWords(now.getDate());
+  const mes = meses[now.getMonth()];
+  const año = numberToSpanishWords(now.getFullYear());
+
+  return `la ciudad de ${ciudad}, a los ${dia} días del mes de ${mes} del año ${año}`;
 }
 
 /**
- * Devuelve hora actual en letras
+ * Hora lista para insertar
  */
 
-export function getCurrentTimeInWords() {
+export function getFormattedTime() {
   const now = new Date();
 
-  return {
-    horas: numberToSpanishWords(now.getHours()),
-    minutos: numberToSpanishWords(now.getMinutes()),
-  };
+  const horas = numberToSpanishWords(now.getHours());
+  const minutos = numberToSpanishWords(now.getMinutes());
+
+  return `${horas} horas con ${minutos} minutos`;
 }

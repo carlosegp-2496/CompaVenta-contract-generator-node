@@ -1,58 +1,60 @@
-import { extractTextFromImages } from "./ocrEngine.js";
-import { parseVehicleData } from "./dataParser.js";
-import { getCurrentDateInWords, getCurrentTimeInWords } from "./dateFormatter";
-import { generateContractDoc } from "./contractGenerator.js";
+import { processFile } from "./src/fileProcessor.js";
+import { extractTextFromImages } from "./src/ocrEngine.js";
+import { parseVehicleData } from "./src/dataParser.js";
+import { buildContractDocument } from "./src/contractBuilder.js";
+import { generateContractDoc } from "./src/contractGenerator.js";
+import { getFormattedDate, getFormattedTime } from "./src/dateFormatter.js";
 
-/**
- * Flujo principal del sistema
- */
+// pipeline o flujo principal del sistema
 
 async function main() {
   try {
-    console.log("Iniciando proceso DUCA ---> Contrato ...");
+    console.log("Iniciando pipeline DUCA...\n");
 
-    // Ejecutar OCR
-    const fullText = await extractTextFromImages("./images");
+    // 1. Archivo de entrada
+    const filePath = "./input/duca.pdf";
 
-    // Parsear datos del vehiculo
-    const vehicleData = parseVehicleData(fullText);
+    // 2. Convertir a imgs
+    const imagePaths = await processFile(filePath);
+    console.log("PDF convertido a imágenes\n");
 
-    console.log("Datos extraídos:");
-    console.log(vehicleData);
+    // 3. OCR
+    const ocrText = await extractTextFromImages(imagePaths);
+    console.log("OCR completado\n");
 
-    // Fecha y hora dinamica
-    const fecha = getCurrentDateInWords("Nejapa");
-    const hora = getCurrentTimeInWords();
+    // 4. Parsear datos del carro
+    const vehicleData = parseVehicleData(ocrText);
+    console.log("Datos extraídos:\n", vehicleData, "\n");
 
-    // Construir objeto final para el contrato
-    const contractData = {
-      vehiculo: vehicleData,
-      fecha,
-      hora,
-      // aqui tenemos que agregar comprado y precio
+    // 5. Datos del comprador (mock manual)
+    const buyerData = {
+      nombre: "JUAN CARLOS PEREZ",
+      edad: "TREINTA Y CINCO",
+      domicilio: "SAN SALVADOR",
+      dui: "12345678-9",
     };
 
-    // Generar contrato o compraventa
-    await generateContractDoc(contractData);
+    // 6. Fecha dinámica
+    const date = getFormattedDate();
+    const time = getFormattedTime();
 
-    console.log("Proceso completado correctamente.");
+    // 7. Construir contrato
+    const contractText = buildContractDocument({
+      vehicleData,
+      buyerData,
+      date,
+      time,
+    });
+
+    console.log("Contrato construido\n");
+
+    // 8. Generar DOCX
+    await generateContractDoc(contractText);
+
+    console.log("PROCESO COMPLETO FINALIZADO ");
   } catch (error) {
-    console.error("Error en el flujo principal:", error);
+    console.error("Error en pipeline:", error);
   }
 }
 
 main();
-
-// import { convertPDF } from "./convert.js";
-// import { runOCR } from "./ocr.js";
-
-// async function main() {
-//   try {
-//     await convertPDF();
-//     await runOCR();
-//   } catch (error) {
-//     console.error("Error en el proceso:", error);
-//   }
-// }
-
-// main();

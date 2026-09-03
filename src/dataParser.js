@@ -7,17 +7,27 @@
 export function parseVehicleData(fullText) {
   try {
     // Separar las paginas del DUCA, porque solo se usara la 5
-    const pages = fullText.split("===== NUEVA PAGINA =====");
+    const pages = fullText.split(/=+\s*NUEVA\s+PAGINA\s*=+/i);
+    console.log("Número de páginas detectadas:", pages.length);
 
     if (pages.length < 5) {
-      throw new Error("El documento no contiene 5 páginas.");
+      console.warn(
+        "Menos de 5 páginas detectadas, usando última página disponible.",
+      );
     }
 
     // Tomar paginas no.5 (indice 4)
-    const pageFive = pages[4];
+    const pageFive = pages[pages.length - 1];
+
+    //testing//
+    console.log("\n===== PAGE 5 RAW OCR =====\n");
+    console.log(pageFive);
 
     // Extraer solo seccion despues de DATOS DEL VEHICULO
     const vehicleSection = extractVehicleSection(pageFive);
+
+    console.log("\n===== VEHICLE SECTION =====\n");
+    console.log(vehicleSection);
 
     // Parsear campos
     const vehicleData = {
@@ -42,25 +52,50 @@ export function parseVehicleData(fullText) {
   }
 }
 
+function normalizeText(text) {
+  return text
+    .toUpperCase()
+    .replace(/0/g, "O")
+    .replace(/1/g, "I")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 /**
  * Extrae texto desde DATOS DEL VEHICULO hasta OBSERVACIONES
  */
 
 function extractVehicleSection(text) {
-  const match = text.match(/DATOS\s+DEL\s+VEHICULO([\s\S]*?)OBSERVACIONES/i);
+  const normalized = normalizeText(text);
 
-  if (!match) {
-    throw new Error("No se encontró la sección DATOS DEL VEHICULO.");
+  // Buscaremos un inicio aproximado, esa es la idea
+  const startIndex = normalized.indexOf("DATOS DEL VEHICULO");
+
+  if (startIndex === -1) {
+    throw new Error("No se encontró el inicio de DATOS DEL VEHICULO.");
   }
 
-  return match[1];
-}
+  // Buscaremos un final aproximado
+  const endIndex = normalized.indexOf("OBSERVACIONES", startIndex);
 
+  const section =
+    endIndex !== -1
+      ? normalized.slice(startIndex, endIndex)
+      : normalized.slice(startIndex);
+
+  return section;
+}
 /**
  * Extrae campo usando regex tolerante
  */
 
-function extractField(text, regex) {
+function extractField(text, regex, fieldName) {
   const match = text.match(regex);
-  return match ? match[1].trim() : null;
+
+  if (!match) {
+    console.warn(`Campo no encontrado: ${fieldName}`);
+    return null;
+  }
+
+  return match[1].trim();
 }
