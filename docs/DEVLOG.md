@@ -207,6 +207,8 @@ Backend Express
 Frontend para carga del DUCA + ingreso manual
 Flujo completo de SaaS
 
+# ASesion 10
+
 # DUCA OCR Engine — Optimización del reconocimiento del número de motor
 
 **Fecha:** 19 de octubre de 2026  
